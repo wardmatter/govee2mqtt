@@ -4,6 +4,43 @@ This repo provides a `govee` executable whose primary purpose is to act
 as a bridge between [Govee](https://govee.com) devices and Home Assistant,
 via the [Home Assistant MQTT Integration](https://www.home-assistant.io/integrations/mqtt/).
 
+## Tap-to-Run support in this fork
+
+This branch combines two upstream Govee2MQTT patches for running scenes saved
+under Tap-to-Run in Govee Home.
+
+- [PR #652](https://github.com/wez/govee2mqtt/pull/652) updates account login and
+  requests an email verification code when Govee returns status `454`.
+- [PR #739](https://github.com/wez/govee2mqtt/pull/739) uses the account token to
+  load Tap-to-Run scenes after Govee stopped accepting community tokens for
+  scene discovery.
+
+### Install the Home Assistant test app
+
+1. Start Mosquitto and confirm that the Home Assistant MQTT integration is connected.
+2. In **Settings → Apps → App store → Repositories**, add
+   `https://github.com/wardmatter/govee2mqtt#codex/govee-tap-to-run`.
+3. Install **Govee to MQTT Bridge (Tap-to-Run test)**. Supervisor builds the app
+   from the pinned patched source. The first build can take several minutes.
+4. Enter your Govee Home email and password in the app configuration and start
+   it. If the log says a verification code was requested, enter the emailed
+   code in `govee_2fa_code` and start the app again.
+5. Open **Settings → Devices & services → MQTT** and find the scenes under
+   **Govee to MQTT**. Activate one with `scene.turn_on` before assigning it to
+   a button or automation.
+
+The test app uses an isolated container network so its UDP 4002 listener can
+coexist with a Govee integration already using that port on the host. This
+setup targets cloud-based Tap-to-Run. LAN discovery across the container
+boundary may be limited. Tap-to-Run discovery was verified without a Govee
+developer API key. Per-device API features may still require one.
+
+On the Home Assistant test installation, the app discovered **Cinema Scene**
+and **Luminance Scene**, and the bridge logged a `scene.turn_on` request for
+each. Both scenes returned after clearing the one-time code and restarting the
+bridge. The test verified command delivery to the bridge. Physical button
+presses and the lights' response still need checking in the room.
+
 ## Features
 
 * Robust LAN-first design. Not all of Govee's devices support LAN control,
