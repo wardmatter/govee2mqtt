@@ -1,5 +1,5 @@
 name: Govee to MQTT Bridge (Tap-to-Run test)
-version: "2026.11.20-test.1"
+version: "2026.11.20-test.2"
 slug: govee2mqtt
 description: Control Govee Devices
 url: https://github.com/wardmatter/govee2mqtt
@@ -17,8 +17,8 @@ webui: http://[HOST]:[PORT:8056]/assets/index.html
 #ingress: true
 #ingress_port: 8056
 
-# Host network access is required for LAN discovery
-host_network: true
+# Tap-to-Run uses the cloud. Isolate the LAN listener from other integrations.
+host_network: false
 
 map:
   - type: addon_config
